@@ -23,7 +23,7 @@ jobs:
             VERSION=$(git rev-parse --short HEAD)
           fi
           echo ::set-output name=version::${VERSION}
-          echo ::set-output name=ref::testnotation.azurecr.io/${{ github.repository }}:${VERSION}
+          echo ::set-output name=ref::testnotation.azurecr.io/integration:${VERSION}
       - name: docker login
         uses: azure/docker-login@v1
         with:
