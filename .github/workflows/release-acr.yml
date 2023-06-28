@@ -27,13 +27,13 @@ jobs:
       - name: docker login
         uses: azure/docker-login@v1
         with:
-          registry: testnotation.azurecr.io
+          login-server: testnotation.azurecr.io
           username: testnotation
           password: ${{ secrets.TEST_NOTATION }}
       - name: docker build
         run: |          
-          docker buildx create --use
-          docker buildx build -t ${{ steps.prepare.outputs.ref }} --push .
+          docker build . -t ${{ steps.prepare.outputs.ref }}
+          docker push ${{ steps.prepare.outputs.ref }}
       - name: setup notation
         uses: shizhMSFT/setup-notation@main
         with:
