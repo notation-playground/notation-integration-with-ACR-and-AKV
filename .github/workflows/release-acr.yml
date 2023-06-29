@@ -6,10 +6,10 @@ on:
       - v*
 
 env:
-  ACR_REGISTRY_TO_RELEASE: testnotation.azurecr.io
+  ACR_TO_RELEASE: testnotation.azurecr.io
   ACR_REPO_TO_RELEASE: integration
-  ACR_REGISTRY_USERNAME: testnotation
-  ACR_REGISTRY_PASSWORD: ${{ secrets.ACR_REGISTRY_PASSWORD }}
+  ACR_USERNAME: testnotation
+  ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
   AKV_PLUGIN_REF: testnotation.azurecr.io/akv-plugin-linux@sha256:ee0b6ccbb6f4232e908c7a6876c10e56f5a02dff4537c30a38690fef1430a61b
   AKV_SUBSCRIPTION_ID: dfb63c8c-7c89-4ef8-af13-75c1d873c895
   AKV_NAME: testnotationAKV
@@ -35,13 +35,13 @@ jobs:
             VERSION=$(git rev-parse --short HEAD)
           fi
           echo ::set-output name=version::${VERSION}
-          echo ::set-output name=ref::${{ env.ACR_REGISTRY_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${VERSION}
+          echo ::set-output name=ref::${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${VERSION}
       - name: docker login
         uses: azure/docker-login@v1
         with:
-          login-server: ${{ env.ACR_REGISTRY_TO_RELEASE }}
-          username: ${{ env.ACR_REGISTRY_USERNAME }}
-          password: ${{ env.ACR_REGISTRY_PASSWORD }}
+          login-server: ${{ env.ACR_TO_RELEASE }}
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD }}
       - name: docker build release
         run: |          
           docker build -t ${{ steps.prepare.outputs.ref }} .
