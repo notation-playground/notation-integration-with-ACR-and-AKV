@@ -13,6 +13,7 @@ env:
   AKV_PLUGIN_REF: testnotation.azurecr.io/akv-plugin-linux@sha256:ee0b6ccbb6f4232e908c7a6876c10e56f5a02dff4537c30a38690fef1430a61b
   AKV_SUBSCRIPTION_ID: dfb63c8c-7c89-4ef8-af13-75c1d873c895
   AKV_NAME: testnotationAKV
+  NOTATION_EXPERIMENTAL: 1
 
 jobs:
   build:
@@ -50,8 +51,7 @@ jobs:
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          run:
-            # set permissions that AKV plugin needs
+          run: |
             az account set -s ${{ env.AKV_SUBSCRIPTION_ID }}
             az keyvault set-policy -n ${{ env.AKV_NAME }} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn ${{ env.AZURE_SERVICE_PRINCIPLE_CLIENT_ID }}
       - name: setup notation
@@ -68,7 +68,7 @@ jobs:
       - name: sign released image
         run: |
           notation key add --plugin azure-kv --id "https://testnotationakv.vault.azure.net/keys/testNotationPEM/ea55efedc6eb4928b5294e7b172061e0" --default testKey
-          notation sign --signature-format cose ${{ steps.prepare.outputs.ref }}
+          notation sign --signature-format cose --allow-referrers-api ${{ steps.prepare.outputs.ref }}
       - name: inspect signatures
         run:
-          notation inspect ${{ steps.prepare.outputs.ref }}
+          notation inspect --allow-referrers-api ${{ steps.prepare.outputs.ref }}
