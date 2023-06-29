@@ -14,6 +14,7 @@ env:
   AKV_SUBSCRIPTION_ID: dfb63c8c-7c89-4ef8-af13-75c1d873c895
   AKV_NAME: testnotationAKV
   AZURE_SERVICE_PRINCIPLE_CLIENT_ID: 40421dc0-256b-4501-a65f-7ae18ce999d5
+  AKV_KEYID: https://testnotationakv.vault.azure.net/keys/testNotationPEM/ea55efedc6eb4928b5294e7b172061e0
   NOTATION_EXPERIMENTAL: 1
 
 jobs:
@@ -66,7 +67,7 @@ jobs:
           notation plugin ls
       - name: sign released image
         run: |
-          notation key add --plugin azure-kv --id "https://testnotationakv.vault.azure.net/keys/testNotationPEM/ea55efedc6eb4928b5294e7b172061e0" --default testKey
+          notation key add --plugin azure-kv --id ${{ env.AKV_KEYID }} --default testKey
           notation sign --signature-format cose --allow-referrers-api ${{ steps.prepare.outputs.ref }}
       - name: inspect signatures
         run:
