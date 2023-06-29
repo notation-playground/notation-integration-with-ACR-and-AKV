@@ -40,7 +40,7 @@ jobs:
           login-server: ${{ env.ACR_REGISTRY_TO_RELEASE }}
           username: ${{ env.ACR_REGISTRY_USERNAME }}
           password: ${{ env.ACR_REGISTRY_PASSWORD }}
-      - name: docker build
+      - name: docker build release
         run: |          
           docker build -t ${{ steps.prepare.outputs.ref }} .
           docker push ${{ steps.prepare.outputs.ref }}
@@ -51,9 +51,10 @@ jobs:
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          run: |
-            az account set -s ${{ env.AKV_SUBSCRIPTION_ID }}
-            az keyvault set-policy -n ${{ env.AKV_NAME }} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn ${{ env.AZURE_SERVICE_PRINCIPLE_CLIENT_ID }}
+      - name: setup akv permissions  
+        run: |
+          az account set -s ${{ env.AKV_SUBSCRIPTION_ID }}
+          az keyvault set-policy -n ${{ env.AKV_NAME }} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn ${{ env.AZURE_SERVICE_PRINCIPLE_CLIENT_ID }}
       - name: setup notation
         uses: shizhMSFT/setup-notation@main
         with:
