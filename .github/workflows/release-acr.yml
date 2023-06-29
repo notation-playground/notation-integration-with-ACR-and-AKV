@@ -13,6 +13,7 @@ env:
   AKV_PLUGIN_REF: testnotation.azurecr.io/akv-plugin-linux@sha256:ee0b6ccbb6f4232e908c7a6876c10e56f5a02dff4537c30a38690fef1430a61b
   AKV_SUBSCRIPTION_ID: dfb63c8c-7c89-4ef8-af13-75c1d873c895
   AKV_NAME: testnotationAKV
+  AZURE_SERVICE_PRINCIPLE_CLIENT_ID: 40421dc0-256b-4501-a65f-7ae18ce999d5
   NOTATION_EXPERIMENTAL: 1
 
 jobs:
@@ -45,16 +46,13 @@ jobs:
           docker build -t ${{ steps.prepare.outputs.ref }} .
           docker push ${{ steps.prepare.outputs.ref }}
       - name: akv login
-        id: akvLogin
-        env:
-          AZURE_SERVICE_PRINCIPLE_CLIENT_ID: 40421dc0-256b-4501-a65f-7ae18ce999d5
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: setup akv permissions  
         run: |
           az account set -s ${{ env.AKV_SUBSCRIPTION_ID }}
-          az keyvault set-policy -n ${{ env.AKV_NAME }} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn ${{ steps.akvLogin.env.AZURE_SERVICE_PRINCIPLE_CLIENT_ID }}
+          az keyvault set-policy -n ${{ env.AKV_NAME }} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn ${{ env.AZURE_SERVICE_PRINCIPLE_CLIENT_ID }}
       - name: setup notation
         uses: shizhMSFT/setup-notation@main
         with:
