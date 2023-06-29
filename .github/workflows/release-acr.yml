@@ -34,6 +34,10 @@ jobs:
         run: |          
           docker build . -t ${{ steps.prepare.outputs.ref }}
           docker push ${{ steps.prepare.outputs.ref }}
+      - name: akv login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: setup notation
         uses: shizhMSFT/setup-notation@main
         with:
@@ -46,6 +50,10 @@ jobs:
           notation plugin install --name azure-kv testnotation.azurecr.io/akv-plugin-linux:v1
           notation plugin ls
       - name: sign released image
+        env:
+          AZURE_TENANT_ID: 72f988bf-86f1-41af-91ab-2d7cd011db47
+          AZURE_CLIENT_ID: 40421dc0-256b-4501-a65f-7ae18ce999d5
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
           notation key add --plugin azure-kv --id "https://testnotationakv.vault.azure.net/keys/testNotationPEM/ea55efedc6eb4928b5294e7b172061e0" --default testKey
           notation sign ${{ steps.prepare.outputs.ref }}
