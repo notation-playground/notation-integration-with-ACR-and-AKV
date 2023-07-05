@@ -61,15 +61,6 @@ jobs:
           # Override the download url
           # TODO: add checksum
           url: https://github.com/Two-Hearts/notation/releases/download/v1.0.0-rc.7-pluginInstall/notation_1.0.0-rc.7-pluginInstall_linux_amd64.tar.gz
-      # - name: install notation plugin
-      #   run: |
-      #     notation plugin install --name azure-kv ${{ env.AKV_PLUGIN_REF }}
-      #     notation plugin ls
-      # - name: sign released image
-      #   run: |
-      #     notation key add --plugin azure-kv --id ${{ env.AKV_KEYID }} --default testKey
-      #     notation sign --signature-format cose --allow-referrers-api ${{ steps.prepare.outputs.ref }}
-
       - name: sign releasd image
         uses: Two-Hearts/notation-azure-kv-sign-actions@main
         with:
