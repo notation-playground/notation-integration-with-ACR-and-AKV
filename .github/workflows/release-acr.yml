@@ -71,6 +71,7 @@ jobs:
         with:
           key_id: ${{ env.AKV_KEYID }}
           target_artifact_reference: ${{ steps.prepare.outputs.ref }}
+          plugin_oci_ref: ${{ env.AKV_PLUGIN_REF }}
       - name: inspect signatures
         run: |
           notation inspect --allow-referrers-api ${{ steps.prepare.outputs.ref }}
