@@ -76,3 +76,9 @@ jobs:
       - name: inspect signatures
         run: |
           notation inspect --allow-referrers-api ${{ steps.prepare.outputs.ref }}
+      - name: verify released image
+        uses: Two-Hearts/notation-actions/verify@main
+        with:
+          target_artifact_reference: ${{ steps.prepare.outputs.ref }}
+          trust_policy_filepath: .github/trustpolicy/trustpolicy.json
+          trust_certificate_path: .github/truststore/root.crt
