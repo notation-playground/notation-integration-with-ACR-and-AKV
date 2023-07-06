@@ -10,6 +10,7 @@ env:
   ACR_REPO_TO_RELEASE: integration
   ACR_USERNAME: testnotation
   ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+  NOTATION_EXPERIMENTAL: 1
 
 jobs:
   build:
@@ -67,7 +68,6 @@ jobs:
           AKV_PLUGIN_REF: testnotation.azurecr.io/akv-plugin-linux@sha256:ee0b6ccbb6f4232e908c7a6876c10e56f5a02dff4537c30a38690fef1430a61b
           AKV_NAME: testnotationAKV
           AKV_KEYID: https://testnotationakv.vault.azure.net/keys/testNotationPEM/ea55efedc6eb4928b5294e7b172061e0
-          NOTATION_EXPERIMENTAL: 1
         with:
           key_id: ${{ env.AKV_KEYID }}
           target_artifact_reference: ${{ steps.prepare.outputs.ref }}
