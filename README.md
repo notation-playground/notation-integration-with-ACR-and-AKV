@@ -6,6 +6,7 @@ The `release-acr.yml` workflow builds and releases the artifact to ACR, then `no
 In total, two Github Secrects are required in the whole process:
 1. `ACR_PASSWORD`: the passowrd to log into the ACR where your artifact will be released.
 2. `AZURE_CREDENTIALS`: the credential to log into AKV where your key pair are stored.
+    
     How to generate `AZURE_CREDENTIALS`:
     ```
     az login
@@ -18,4 +19,4 @@ After the Github secrets are set up, create a new tag using `git tag` at local t
 
 The workflow uses `shizhMSFT/setup-notation@main` to setup Notation.
 
-The workflow uses `/notation-azure-kv-sign-actions@main` to setup notation-azure-kv plugin and perform Sign operation.
+The workflow uses `notation-playground/notation-azure-kv-sign-actions@main` to setup notation-azure-kv plugin and perform Sign operation.
