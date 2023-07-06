@@ -1,5 +1,4 @@
-name: release-acr
-
+name: release-with-plugin-url-and-cert-bundle
 on:
   push:
     tags:

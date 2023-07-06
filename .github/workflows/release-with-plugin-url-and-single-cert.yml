@@ -1,4 +1,4 @@
-name: release-acr
+name: release-with-plugin-url-and-single-cert
 
 on:
   push:
