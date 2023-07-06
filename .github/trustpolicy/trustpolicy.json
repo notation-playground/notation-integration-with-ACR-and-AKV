@@ -1,0 +1,16 @@
+{
+    "version": "1.0",
+    "trustPolicies": [
+        {
+            "name": "remote",
+            "registryScopes": [ "testnotation.azurecr.io/integration" ],
+            "signatureVerification": {
+                "level" : "strict" 
+            },
+            "trustStores": [ "ca:integration"],
+            "trustedIdentities": [
+                "*"
+            ]
+        }
+    ]
+}
