@@ -67,13 +67,12 @@ jobs:
         env:
           AKV_PLUGIN_REF: testnotation.azurecr.io/akv-plugin-linux@sha256:ee0b6ccbb6f4232e908c7a6876c10e56f5a02dff4537c30a38690fef1430a61b
           AKV_NAME: testnotationAKV
-          #AKV_KEYID: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
-          AKV_KEYID: https://testnotationakv.vault.azure.net/certificates/testNotationPEM/ea55efedc6eb4928b5294e7b172061e0
+          AKV_KEYID: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
         with:
           key_id: ${{ env.AKV_KEYID }}
           target_artifact_reference: ${{ steps.prepare.outputs.ref }}
           plugin_oci_ref: ${{ env.AKV_PLUGIN_REF }}
-          #cert_bundle_filepath: .github/cert-bundle/cert-bundle.crt
+          cert_bundle_filepath: .github/cert-bundle/cert-bundle.crt
       - name: inspect signatures
         run: |
           notation inspect --allow-referrers-api ${{ steps.prepare.outputs.ref }}
