@@ -14,9 +14,10 @@ In total, two Github Secrects are required in the whole process:
     ```
     Add the JSON output of above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`
 
-## Triggering release-acr workflow
-After the Github secrets are set up, create a new tag using `git tag` at local then `git push` to Github repo. `release-acr` will be triggered automatically. On success, you should see the artifact pushed to your ACR with a COSE signature attached. 
+## Github Actions used in the release-acr workflow
+1. `notation-playground/notation-actions/setup@main` to setup Notation. (https://github.com/notation-playground/notation-actions/tree/main/setup)
+2. `notation-playground/notation-azure-kv-sign-actions@main` to setup notation-azure-kv plugin and perform Sign operation. (https://github.com/notation-playground/notation-azure-kv-sign-actions)
+3. `notation-playground/notation-actions/verify@main` to verify the signature generated in step 2. (https://github.com/notation-playground/notation-actions/tree/main/verify)
 
-The workflow uses `shizhMSFT/setup-notation@main` to setup Notation.
-
-The workflow uses `notation-playground/notation-azure-kv-sign-actions@main` to setup notation-azure-kv plugin and perform Sign operation.
+## Trigger the release-acr workflow
+Create a new tag using `git tag` at local then `git push` the tag to Github repo. `release-acr` will be triggered automatically. On success, you should see the artifact pushed to your ACR with a COSE signature attached. 
