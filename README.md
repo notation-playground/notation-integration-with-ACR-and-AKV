@@ -21,3 +21,5 @@ In total, two Github Secrects are required in the whole process:
 
 ## Trigger the release-acr workflow
 Create a new tag using `git tag` at local then `git push` the tag to Github repo. `release-acr` will be triggered automatically. On success, you should see the artifact pushed to your ACR with a COSE signature attached. 
+
+A successful build: https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/actions/runs/5483230452/jobs/9989338242
