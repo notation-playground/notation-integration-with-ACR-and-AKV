@@ -54,10 +54,8 @@ jobs:
           AKV_SUBSCRIPTION_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["subscriptionId"]')
           echo "::add-mask::$AZURE_SERVICE_PRINCIPLE_CLIENT_ID"
           echo "::add-mask::$AKV_SUBSCRIPTION_ID"
-          echo AZURE_SERVICE_PRINCIPLE_CLIENT_ID=$AZURE_SERVICE_PRINCIPLE_CLIENT_ID >> $GITHUB_ENV
-          echo AKV_SUBSCRIPTION_ID=$AKV_SUBSCRIPTION_ID >> $GITHUB_ENV
-          az account set -s ${{env.AKV_SUBSCRIPTION_ID}}
-          az keyvault set-policy -n ${{env.AKV_NAME}} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn ${{env.AZURE_SERVICE_PRINCIPLE_CLIENT_ID}}
+          az account set -s $AKV_SUBSCRIPTION_ID
+          az keyvault set-policy -n ${{env.AKV_NAME}} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn $AZURE_SERVICE_PRINCIPLE_CLIENT_ID
       - name: setup notation
         uses: notation-playground/notation-actions/setup@main
         with:
