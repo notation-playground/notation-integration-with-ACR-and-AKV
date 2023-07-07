@@ -1,4 +1,4 @@
-name: test-sign
+name: test-notation-action
 
 on:
   push:
