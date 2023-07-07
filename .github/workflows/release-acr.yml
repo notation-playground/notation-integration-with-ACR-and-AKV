@@ -1,4 +1,4 @@
-name: release-with-plugin-install-and-cert-bundle
+name: release-acr
 
 on:
   push:
