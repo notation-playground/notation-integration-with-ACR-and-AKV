@@ -78,4 +78,4 @@ jobs:
         with:
           target_artifact_reference: ${{ steps.prepare.outputs.ref }}
           trust_policy_filepath: .github/trustpolicy/trustpolicy.json
-          trust_certificate_dir: .github/truststore
+          trust_store_dir: .github/truststore
