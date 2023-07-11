@@ -68,6 +68,7 @@ jobs:
           plugin_checksum: 4242054463089F4b04019805f2c009267dbcc9689e386BC88d3c4fc4E095e52c
           key_id: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
           target_artifact_reference: ${{ steps.prepare.outputs.ref }}
+          signature_format: cose
           plugin_config: ca_certs=.github/cert-bundle/cert-bundle.crt
       - name: inspect signatures
         run: |
