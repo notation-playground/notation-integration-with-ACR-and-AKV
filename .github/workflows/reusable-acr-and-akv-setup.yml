@@ -1,0 +1,73 @@
+name: Reusable Notation ACR and AKV integration setup
+
+on:
+  workflow_call:
+    inputs:
+      ACR_TO_RELEASE:
+        required: true
+        type: string
+      ACR_REPO_TO_RELEASE:
+        required: true
+        type: string
+      ACR_USERNAME:
+        required: true
+        type: string
+      AKV_NAME:
+        required: true
+        type: string
+    secrets:
+        ACR_PASSWORD:
+          required: true
+        AZURE_CREDENTIALS:
+          required: true
+    outputs:
+        target-artifact-reference:
+          description: "reference of target artifact"
+          value: ${{ jobs.setup.outputs.target-artifact-reference }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+        target-artifact-reference: ${{ steps.prepare.outputs.ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: prepare
+        id: prepare
+        run: |
+          VERSION=${GITHUB_REF#refs/*/}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          if [[ "${VERSION}" == "${BRANCH_NAME}" ]]; then
+            VERSION=$(git rev-parse --short HEAD)
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=ref::${{ inputs.ACR_TO_RELEASE }}/${{ inputs.ACR_REPO_TO_RELEASE }}:${VERSION}
+      - name: docker login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ inputs.ACR_TO_RELEASE }}
+          username: ${{ inputs.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - name: docker build release
+        run: |          
+          docker build -t ${{ steps.prepare.outputs.ref }} .
+          docker push ${{ steps.prepare.outputs.ref }}
+      - name: AKV login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: setup AKV permissions
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          AKV_NAME: ${{inputs.AKV_NAME}}
+        run: |
+            AZURE_SERVICE_PRINCIPLE_CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["clientId"]')
+            AKV_SUBSCRIPTION_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["subscriptionId"]')
+            echo "::add-mask::$AZURE_SERVICE_PRINCIPLE_CLIENT_ID"
+            echo "::add-mask::$AKV_SUBSCRIPTION_ID"
+            az account set -s $AKV_SUBSCRIPTION_ID
+            az keyvault set-policy -n ${{inputs.AKV_NAME}} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn $AZURE_SERVICE_PRINCIPLE_CLIENT_ID
