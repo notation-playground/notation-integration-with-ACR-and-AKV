@@ -6,6 +6,8 @@ on:
       - v*
 
 env:
+  ACR_TO_RELEASE: testnotation.azurecr.io
+  ACR_USERNAME: testnotation
   NOTATION_EXPERIMENTAL: 1
 
 jobs:
@@ -34,6 +36,12 @@ jobs:
         uses: shizhMSFT/setup-notation@main
         with:
           version: 1.0.0-rc.7
+      - name: docker login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_TO_RELEASE }}
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
       - name: sign released artifact using key pair from AKV
         uses: Two-Hearts/notation-action/sign@sign
         with:
