@@ -77,5 +77,5 @@ jobs:
         uses: Two-Hearts/notation-action/verify@verify
         with:
           target_artifact_reference: ${{ steps.prepare.outputs.ref }}
-          trust_policy_filepath: .github/trustpolicy/trustpolicy.json
-          trust_store_dir: .github/truststore
+          trust_policy: .github/trustpolicy/trustpolicy.json
+          trust_store: .github/truststore
