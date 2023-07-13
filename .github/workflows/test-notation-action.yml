@@ -24,48 +24,12 @@ jobs:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
   notation-setup-sign-verify:
+    needs: setup-acr-and-akv
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v3
-      # - name: prepare
-      #   id: prepare
-      #   run: |
-      #     VERSION=${GITHUB_REF#refs/*/}
-      #     BRANCH_NAME=${GITHUB_REF#refs/heads/}
-      #     if [[ "${VERSION}" == "${BRANCH_NAME}" ]]; then
-      #       VERSION=$(git rev-parse --short HEAD)
-      #     fi
-      #     echo ::set-output name=version::${VERSION}
-      #     echo ::set-output name=ref::${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${VERSION}
-      # - name: docker login
-      #   uses: azure/docker-login@v1
-      #   with:
-      #     login-server: ${{ env.ACR_TO_RELEASE }}
-      #     username: ${{ env.ACR_USERNAME }}
-      #     password: ${{ env.ACR_PASSWORD }}
-      # - name: docker build release
-      #   run: |          
-      #     docker build -t ${{ steps.prepare.outputs.ref }} .
-      #     docker push ${{ steps.prepare.outputs.ref }}
-      # - name: AKV login
-      #   uses: Azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
-      # - name: setup AKV permissions
-      #   env:
-      #     AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-      #     AKV_NAME: testnotationAKV
-      #   run: |
-      #     AZURE_SERVICE_PRINCIPLE_CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["clientId"]')
-      #     AKV_SUBSCRIPTION_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["subscriptionId"]')
-      #     echo "::add-mask::$AZURE_SERVICE_PRINCIPLE_CLIENT_ID"
-      #     echo "::add-mask::$AKV_SUBSCRIPTION_ID"
-      #     az account set -s $AKV_SUBSCRIPTION_ID
-      #     az keyvault set-policy -n ${{env.AKV_NAME}} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn $AZURE_SERVICE_PRINCIPLE_CLIENT_ID
       - name: setup notation
         uses: shizhMSFT/setup-notation@main
         with:
