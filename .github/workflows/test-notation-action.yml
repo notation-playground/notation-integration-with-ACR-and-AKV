@@ -42,6 +42,10 @@ jobs:
           login-server: ${{ env.ACR_TO_RELEASE }}
           username: ${{ env.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+      - name: AKV login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: sign released artifact using key pair from AKV
         uses: Two-Hearts/notation-action/sign@sign
         with:

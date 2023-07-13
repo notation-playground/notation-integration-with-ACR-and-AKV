@@ -56,10 +56,6 @@ jobs:
         run: |          
           docker build -t ${{ steps.prepare.outputs.ref }} .
           docker push ${{ steps.prepare.outputs.ref }}
-      - name: AKV login
-        uses: Azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: setup AKV permissions
         env:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
