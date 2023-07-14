@@ -32,6 +32,8 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: setup notation
         uses: shizhMSFT/setup-notation@main
         with:
@@ -55,7 +57,7 @@ jobs:
           key_id: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
           target_artifact_reference: ${{ needs.setup-acr-and-akv.outputs.target-artifact-reference }}
           signature_format: cose
-          plugin_config: ca_certs=${{ github.workspace }}/.github/cert-bundle/cert-bundle.crt
+          plugin_config: ca_certs=.github/cert-bundle/cert-bundle.crt
       - name: inspect signatures
         run: |
           notation inspect --allow-referrers-api ${{ needs.setup-acr-and-akv.outputs.target-artifact-reference }}
