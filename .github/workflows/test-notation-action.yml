@@ -11,6 +11,8 @@ env:
   NOTATION_EXPERIMENTAL: 1
 
 jobs:
+  # call reusable workflow to build artifact, release to ACR, and sets AKV
+  # permissions. 
   setup-acr-and-akv:
     permissions:
       contents: read
@@ -25,6 +27,7 @@ jobs:
       ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
+  # setup notation, sign the artifact, and verify the signature
   notation-setup-sign-verify:
     needs: setup-acr-and-akv
     runs-on: ubuntu-latest
