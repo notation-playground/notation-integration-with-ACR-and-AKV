@@ -32,7 +32,7 @@ jobs:
       contents: read
       packages: write
     outputs:
-        target-artifact-reference: ${{ steps.prepare.outputs.ref }}
+        target-artifact-reference: ${{ env.ref }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,8 +44,7 @@ jobs:
           if [[ "${VERSION}" == "${BRANCH_NAME}" ]]; then
             VERSION=$(git rev-parse --short HEAD)
           fi
-          echo ::set-output name=version::${VERSION}
-          echo ::set-output name=ref::${{ inputs.ACR_TO_RELEASE }}/${{ inputs.ACR_REPO_TO_RELEASE }}:${VERSION}
+          echo "ref=${{ inputs.ACR_TO_RELEASE }}/${{ inputs.ACR_REPO_TO_RELEASE }}:${VERSION}" >> "$GITHUB_ENV"
       - name: docker login
         uses: azure/docker-login@v1
         with:
@@ -54,8 +53,8 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
       - name: docker build release
         run: |          
-          docker build -t ${{ steps.prepare.outputs.ref }} .
-          docker push ${{ steps.prepare.outputs.ref }}
+          docker build -t ${{ env.ref }} .
+          docker push ${{ env.ref }}
       - name: AKV login
         uses: Azure/login@v1
         with:
