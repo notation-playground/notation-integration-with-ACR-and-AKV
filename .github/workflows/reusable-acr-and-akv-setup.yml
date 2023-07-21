@@ -18,8 +18,6 @@ on:
     secrets:
         ACR_PASSWORD:
           required: true
-        AZURE_CREDENTIALS:
-          required: true
     outputs:
         target-artifact-reference:
           description: "reference of target artifact"
@@ -55,8 +53,3 @@ jobs:
         run: |          
           docker build -t ${{ env.ref }} .
           docker push ${{ env.ref }}
-      - name: Azure login
-        uses: Azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          allow-no-subscriptions: true
