@@ -55,18 +55,7 @@ jobs:
         run: |          
           docker build -t ${{ env.ref }} .
           docker push ${{ env.ref }}
-      - name: AKV login
+      - name: Azure login
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: setup AKV permissions
-        env:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-          AKV_NAME: ${{inputs.AKV_NAME}}
-        run: |
-            AZURE_SERVICE_PRINCIPLE_CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["clientId"]')
-            AKV_SUBSCRIPTION_ID=$(echo $AZURE_CREDENTIALS | jq -r '.["subscriptionId"]')
-            echo "::add-mask::$AZURE_SERVICE_PRINCIPLE_CLIENT_ID"
-            echo "::add-mask::$AKV_SUBSCRIPTION_ID"
-            az account set -s $AKV_SUBSCRIPTION_ID
-            az keyvault set-policy -n ${{inputs.AKV_NAME}} --secret-permissions get list --key-permissions sign --certificate-permissions get --spn $AZURE_SERVICE_PRINCIPLE_CLIENT_ID
