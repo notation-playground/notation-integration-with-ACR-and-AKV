@@ -54,8 +54,8 @@ jobs:
         uses: Two-Hearts/notation-action/sign@refactor
         with:
           plugin_name: azure-kv
-          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0-rc.2/notation-azure-kv_1.0.0-rc.2_linux_amd64.tar.gz
-          plugin_checksum: 4242054463089F4b04019805f2c009267dbcc9689e386BC88d3c4fc4E095e52c
+          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0-rc.3/notation-azure-kv_1.0.0-rc.3_linux_amd64.tar.gz
+          plugin_checksum: 8e224572aa2f6d4f8f906217aaac78bfaaa0e272c039fe89443b5c4567b80bc5
           key_id: ${{ env.KEY_ID }}
           target_artifact_reference: ${{ env.target_artifact_reference }}
           signature_format: cose
