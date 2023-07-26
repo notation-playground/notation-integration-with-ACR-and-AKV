@@ -49,9 +49,9 @@ jobs:
           creds: ${{ secrets.PATRICK_SP }}
           allow-no-subscriptions: true
       - name: setup notation
-        uses: Two-Hearts/notation-action/setup@refactor
+        uses: notaryproject/notation-action/setup@main
       - name: sign released artifact using key pair from AKV
-        uses: Two-Hearts/notation-action/sign@refactor
+        uses: notaryproject/notation-action/sign@main
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0-rc.3/notation-azure-kv_1.0.0-rc.3_linux_amd64.tar.gz
@@ -61,7 +61,7 @@ jobs:
           signature_format: cose
           plugin_config: ca_certs=.github/cert-bundle/cert-bundle.crt
       - name: verify released artifact
-        uses: Two-Hearts/notation-action/verify@refactor
+        uses: notaryproject/notation-action/verify@main
         with:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           trust_policy: .github/trustpolicy/trustpolicy.json
