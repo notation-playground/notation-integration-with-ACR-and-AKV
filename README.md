@@ -15,11 +15,11 @@ In total, two Github Secrects are required in the whole process:
     Add the JSON output of above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`
 
 ## Github Actions used in the test-notation-action workflow
-1. `notation-playground/notation-actions/setup@main` to setup Notation. (https://github.com/notation-playground/notation-actions/tree/main/setup)
-2. `Two-Hearts/notation-action/sign@sign` to setup plugin and perform Sign operation. (https://github.com/Two-Hearts/notation-action/tree/sign/sign)
-3. `Two-Hearts/notation-action/verify@verify` to verify the signature generated in step 2. (https://github.com/Two-Hearts/notation-action/tree/verify/verify)
+1. `notaryproject/notation-action/setup@main` to setup Notation. (https://github.com/notaryproject/notation-action/tree/main/setup)
+2. `notaryproject/notation-action/sign@main` to setup plugin and perform Sign operation. (https://github.com/notaryproject/notation-action/tree/main/sign)
+3. `notaryproject/notation-action/verify@main` to verify the signature generated in step 2. (https://github.com/notaryproject/notation-action/tree/main/verify)
 
 ## Trigger the test-notation-action workflow
 Create a new tag using `git tag` at local then `git push` the tag to Github repo. `test-notation-action` will be triggered automatically. On success, you should see the artifact pushed to your ACR with a COSE signature attached. 
 
-One successful build: https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/actions/runs/5518621155/jobs/10062827824
+One successful build: https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/actions/runs/5666584706/job/15353616604
