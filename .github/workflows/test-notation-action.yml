@@ -39,10 +39,19 @@ jobs:
           login-server: ${{ env.ACR_TO_RELEASE }}
           username: ${{ env.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-      - name: docker build release
-        run: |          
-          docker build -t ${{ env.target_artifact_reference }} .
-          docker push ${{ env.target_artifact_reference }}
+      # - name: docker build release
+      #   run: |          
+      #     docker build -t ${{ env.target_artifact_reference }} .
+      #     docker push ${{ env.target_artifact_reference }}
+      - name: Build and push
+        id: push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ env.target_artifact_reference }}
+      - name: Retrieve digest
+        run: |
+          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
       - name: Azure login
         uses: Azure/login@v1
         with:
