@@ -56,7 +56,8 @@ jobs:
       - name: setup notation
         uses: notaryproject/notation-action/setup@main
       - name: sign released artifact using key pair from AKV
-        uses: notaryproject/notation-action/sign@main
+        #uses: notaryproject/notation-action/sign@main
+        uses: Two-Hearts/notation-action/sign@fix
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0-rc.3/notation-azure-kv_1.0.0-rc.3_linux_amd64.tar.gz
@@ -64,7 +65,10 @@ jobs:
           key_id: ${{ env.KEY_ID }}
           target_artifact_reference: ${{ env.target_artifact_reference }}
           signature_format: cose
-          plugin_config: ca_certs=.github/cert-bundle/cert-bundle.crt
+          plugin_config: |-
+            - ca_certs=.github/cert-bundle/cert-bundle.crt
+            - key1 = val1
+          # allow_referrers_api
       - name: verify released artifact
         uses: notaryproject/notation-action/verify@main
         with:
