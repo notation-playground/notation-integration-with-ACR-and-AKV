@@ -5,14 +5,28 @@ The `test-notation-action.yml` workflow builds and releases the artifact to ACR,
 ## Github Secrets
 In total, two Github Secrects are required in the whole process:
 1. `ACR_PASSWORD`: the passowrd to log into the ACR where your artifact will be released.
-2. `AZURE_CREDENTIALS`: the credential to log into AKV where your key pair are stored.
+2. `AZURE_CREDENTIALS`: the credential to AKV where your key pair are stored.
     
-    How to generate `AZURE_CREDENTIALS`:
+    ### How to generate `AZURE_CREDENTIALS`:
     ```
+    # login using your own account
     az login
-    az ad sp create-for-rbac --name {myApp} --role contributor --scopes /subscriptions/{akv-subscription-id}/resourceGroups/{akv-resource-group} --sdk-auth
+
+    # Create an service principal
+    spn=notationtest
+    az ad sp create-for-rbac -n $spn --sdk-auth
     ```
     Add the JSON output of above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`
+
+    ### Grant permission to that principal
+    ```
+    akv=notationakv
+    az keyvault set-policy --name $akv --spn $spn --certificate-permissions get --key-permissions sign --secret-permissions get
+    ```
+    ### Login as that principal
+    ```
+    az login
+    ```
 
 ## Github Actions used in the test-notation-action workflow
 1. `notaryproject/notation-action/setup@main` to setup Notation. (https://github.com/notaryproject/notation-action/tree/main/setup)
@@ -21,5 +35,3 @@ In total, two Github Secrects are required in the whole process:
 
 ## Trigger the test-notation-action workflow
 Create a new tag using `git tag` at local then `git push` the tag to Github repo. `test-notation-action` will be triggered automatically. On success, you should see the artifact pushed to your ACR with a COSE signature attached. 
-
-One successful build: https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/actions/runs/5666584706/job/15353616604
