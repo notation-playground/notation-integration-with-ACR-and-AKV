@@ -66,8 +66,8 @@ jobs:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           signature_format: cose
           plugin_config: |-
-            - ca_certs=.github/cert-bundle/cert-bundle.crt
-            - key1 = val1
+            ca_certs=.github/cert-bundle/cert-bundle.crt
+            key1 = val1
           # allow_referrers_api
       - name: verify released artifact
         uses: notaryproject/notation-action/verify@main
