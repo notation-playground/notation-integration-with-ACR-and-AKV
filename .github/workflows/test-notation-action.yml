@@ -70,7 +70,7 @@ jobs:
           #   ca_certs=.github/cert-bundle/cert-bundle.crt
                   
           #   self_signed=false
-          plugin_config: ca_certs=.github/cert-bundle/cert-bundle.crt
+          #plugin_config: ca_certs=.github/cert-bundle/cert-bundle.crt
       - name: verify released artifact
         uses: notaryproject/notation-action/verify@main
         with:
