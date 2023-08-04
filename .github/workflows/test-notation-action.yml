@@ -50,8 +50,7 @@ jobs:
       - name: setup notation
         uses: notaryproject/notation-action/setup@main
       - name: sign released artifact using key pair from AKV
-        #uses: notaryproject/notation-action/sign@main
-        uses: Two-Hearts/notation-action/sign@update
+        uses: notaryproject/notation-action/sign@main
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0-rc.3/notation-azure-kv_1.0.0-rc.3_linux_amd64.tar.gz
@@ -64,7 +63,7 @@ jobs:
             self_signed=false
           allow_referrers_api: 'true'
       - name: verify released artifact
-        uses: Two-Hearts/notation-action/verify@update
+        uses: notaryproject/notation-action/verify@main
         with:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           trust_policy: .github/trustpolicy/trustpolicy.json
