@@ -2,8 +2,6 @@ name: test-notation-action
 
 on:
   push:
-    tags:
-      - v*
 
 env:
   ACR_TO_RELEASE: testnotation.azurecr.io
@@ -27,12 +25,8 @@ jobs:
       - name: prepare
         id: prepare
         run: |
-          VERSION=${GITHUB_REF#refs/*/}
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          if [[ "${VERSION}" == "${BRANCH_NAME}" ]]; then
-            VERSION=$(git rev-parse --short HEAD)
-          fi
-          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${VERSION}" >> "$GITHUB_ENV"
+          BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${BRANCH_NAME}" >> "$GITHUB_ENV"
       - name: docker login
         uses: azure/docker-login@v1
         with:
@@ -57,7 +51,7 @@ jobs:
         uses: notaryproject/notation-action/setup@main
       - name: sign released artifact using key pair from AKV
         #uses: notaryproject/notation-action/sign@main
-        uses: Two-Hearts/notation-action/sign@fix
+        uses: Two-Hearts/notation-action/sign@update
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0-rc.3/notation-azure-kv_1.0.0-rc.3_linux_amd64.tar.gz
@@ -68,9 +62,11 @@ jobs:
           plugin_config: |-
             ca_certs=.github/cert-bundle/cert-bundle.crt
             self_signed=false
+          allow_referrers_api: 'true'
       - name: verify released artifact
-        uses: notaryproject/notation-action/verify@main
+        uses: Two-Hearts/notation-action/verify@update
         with:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           trust_policy: .github/trustpolicy/trustpolicy.json
           trust_store: .github/truststore
+          allow_referrers_api: 'true'
