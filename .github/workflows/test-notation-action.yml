@@ -62,11 +62,11 @@ jobs:
           plugin_config: |-
             ca_certs=.github/cert-bundle/cert-bundle.crt
             self_signed=false
-          
+          allow_referrers_api: 'true'
       - name: verify released artifact
         uses: Two-Hearts/notation-action/verify@update
         with:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           trust_policy: .github/trustpolicy/trustpolicy.json
           trust_store: .github/truststore
-          
+          allow_referrers_api: 'true'
