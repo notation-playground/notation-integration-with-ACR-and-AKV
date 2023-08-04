@@ -71,4 +71,4 @@ jobs:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           trust_policy: .github/trustpolicy/trustpolicy.json
           trust_store: .github/truststore
-          allow_referrers_api: 'true'
+          allow_referrers_api: 'false'
