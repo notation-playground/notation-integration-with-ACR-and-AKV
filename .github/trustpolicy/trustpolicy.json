@@ -3,7 +3,7 @@
     "trustPolicies": [
         {
             "name": "remote",
-            "registryScopes": [ "testnotation.azurecr.io/integration", "*" ],
+            "registryScopes": [ "testnotation.azurecr.io/integration" ],
             "signatureVerification": {
                 "level" : "strict" 
             },
