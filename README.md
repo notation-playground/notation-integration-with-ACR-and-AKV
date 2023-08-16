@@ -12,21 +12,23 @@ In total, two Github Secrects are required in the whole process:
     # login using your own account
     az login
 
-    # Create an service principal
-    spn=notationtest
-    az ad sp create-for-rbac -n $spn --sdk-auth
+    # create a new service principal
+    spn=<your_service_principal_name>
+    az ad sp create-for-rbac -n $spn --sdk-auth >> sp.json
     ```
-    Add the JSON output of above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`
+    > [!IMPORTANT]
+    > Add the JSON output of the above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`
 
     ### Grant permission to that principal
     ```
-    akv=notationakv
-    az keyvault set-policy --name $akv --spn $spn --certificate-permissions get --key-permissions sign --secret-permissions get
+    # client id of the service principal created from last step
+    clientId=$(jq .clientId sp.json | tr -d '"')
+
+    # set policy for your akv
+    akv=<your_akv_name>
+    az keyvault set-policy --name $akv --spn $clientId --certificate-permissions get --key-permissions sign --secret-permissions get
     ```
-    ### Login as that principal
-    ```
-    az login
-    ```
+
 
 ## Github Actions used in the test-notation-action workflow
 1. `notaryproject/notation-action/setup@main` to setup Notation. (https://github.com/notaryproject/notation-action/tree/main/setup)
