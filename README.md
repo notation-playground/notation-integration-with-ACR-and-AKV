@@ -14,16 +14,17 @@ In total, two Github Secrects are required in the whole process:
 
     # create a new service principal
     spn=<your_service_principal_name>
-    az ad sp create-for-rbac -n $spn --sdk-auth >> sp.json
+    az ad sp create-for-rbac -n $spn --sdk-auth
     ```
     > [!IMPORTANT]
     > Add the JSON output of the above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`
+    > Save the 'clientId' from the JSON output into an environment varialbe (without double quotes) as it will be needed in the next step:
+    > ```
+    > clientId=<clientId_from_JSON_output_of_last_step>
+    > ```
 
     ### Grant permission to that principal
     ```
-    # client id of the service principal created from last step
-    clientId=$(jq .clientId sp.json | tr -d '"')
-
     # set policy for your akv
     akv=<your_akv_name>
     az keyvault set-policy --name $akv --spn $clientId --certificate-permissions get --key-permissions sign --secret-permissions get
