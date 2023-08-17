@@ -18,7 +18,7 @@ In total, two Github Secrects are required in the whole process:
     ```
     > [!IMPORTANT]
     > Add the JSON output of the above `az ad sp` command to Github Secret (https://learn.microsoft.com/en-us/azure/developer/github/github-key-vault#create-a-github-secret) with name `AZURE_CREDENTIALS`.
-
+    >
     > Save the `clientId` from the JSON output into an environment varialbe (without double quotes) as it will be needed in the next step:
     > ```
     > clientId=<clientId_from_JSON_output_of_last_step>
