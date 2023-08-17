@@ -1,5 +1,6 @@
 # notation-integration-with-ACR-and-AKV
-Integrating Notation and notation-akv-plugin to a project releasing to ACR using Github Actions. <br>
+Integrating Notation and notation-akv-plugin to a project releasing to ACR using Github Actions.
+
 The `test-notation-action.yml` workflow build and release the artifact to ACR, sign it with a key pair from AKV, then verify the signature.
 
 ## Github Secrets
