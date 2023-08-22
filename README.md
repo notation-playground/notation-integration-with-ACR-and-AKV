@@ -1,5 +1,5 @@
 # notation-integration-with-ACR-and-AKV
-Integrating Notation and notation-akv-plugin to a project releasing to ACR using Github Actions.
+Integrating [Notation](https://github.com/notaryproject/notation) and [notation-azure-kv](https://github.com/Azure/notation-azure-kv) plugin with a project releasing to ACR using [Notation Github Actions](https://github.com/notaryproject/notation-action).
 
 The `test-notation-action.yml` workflow build and release the artifact to ACR, sign it with a key pair from AKV, then verify the signature.
 
