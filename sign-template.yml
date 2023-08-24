@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v3
       - name: prepare
         id: prepare
+        # using `v1` as an example tag, user can pick their own
         run: |
           echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}:v1" >> "$GITHUB_ENV"
       # Log into your ACR
