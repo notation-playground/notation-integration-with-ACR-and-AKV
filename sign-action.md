@@ -53,13 +53,13 @@ See [az keyvault set-policy](https://learn.microsoft.com/en-us/cli/azure/keyvaul
 
 ### Edit the sample workflow
 
-- Create `<your_gitrepo>/.github/workflows/<your_workflow>.yml` to run and test the CI/CD pipeline. You can copy the [signing template workflow](https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/blob/template/sign-template.yml) to your own `<your_workflow>.yml` file. 
+- Create `<your_gitrepo>/.github/workflows/<your_workflow>.yml` to run and test the CI/CD pipeline. You can copy the [signing template workflow](https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/blob/template/sign-template.yml) from the collapsed section below to your own `<your_workflow>.yml` file. 
 
 - Update the environmental variables based on your environment by following the comments in the template. Save it and commit it to the repository.
 
 <details>
 
-<summary>See the signing workflow template (Click here)</summary>
+<summary>See the signing workflow template (Click here).</summary>
 
 ```yaml
 # build and push an OCI artifact to ACR, setup notation and sign the artifact
