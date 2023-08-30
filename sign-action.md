@@ -2,26 +2,29 @@
 
 This document walks you through how to create a GitHub Actions workflow to achieve the following goals:
 
-1. Build an image and push it to Azure Container Registry (ACR)
-2. Sign the image with Notation and Notation AKV plugin with a signing key stored in Azure Key Vault (AKV). The generated signature is automatically pushed to ACR
+1. Build an image and push it to Azure Container Registry (ACR).
+2. Sign the image with Notation and Notation AKV plugin with a signing key stored in Azure Key Vault (AKV). The generated signature is automatically pushed to ACR.
 
 ## Prerequisites
 
 - You have created a Key Vault in AKV and created a self-signed signing key and certificate. You can follow this [doc](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-tutorial-sign-build-push#create-a-self-signed-certificate-azure-cli) to create self-signed key and certificate for testing purposes. 
-- You have created a registry in Azure Container Registry
-- You have a GitHub repository to store the sample workflow file and GitHub Secrets
+- You have created a registry in Azure Container Registry.
+- You have a GitHub repository to store the sample workflow file and GitHub Secrets.
 
 ## Create GitHub Secrets to store credentials
 
-Enter your GitHub repository, create two encrypted secrets `ACR_PASSWORD` and `AZURE_CREDENTIALS` for the repository to authenticate with ACR and AKV. See the [GitHub doc](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for details.
+Enter your GitHub repository, create two encrypted secrets `ACR_PASSWORD` and `AZURE_CREDENTIALS` in the repository to authenticate with ACR and AKV. See [creating encrypted secrets for a repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for details.
 
-### Create a GitHub Secret `ACR_PASSWORD`
+- `ACR_PASSWORD`: the password of your ACR registry where your image will be stored.
+- `AZURE_CREDENTIALS`: the credential to access your AKV where your signing key pair is stored.
 
-Create the first GitHub Secret naming `ACR_PASSWORD`, enter the password of your ACR registry where your image will be stored in the GitHub Secret value.
+### Create `ACR_PASSWORD`
 
-### Create a GitHub Secret `AZURE_CREDENTIALS`
+Create a new GitHub repository secret. Type `ACR_PASSWORD` in the `Name` field. Enter your ACR password into the `Secret` field. 
 
-Follow the steps below to get the value of `AZURE_CREDENTIALS`. This is credential to access your AKV where your signing key pair is stored.
+### Create `AZURE_CREDENTIALS`
+
+Follow the steps below to get the value of `AZURE_CREDENTIALS`. 
 
 - Execute the following commands to create a new service principal on Azure. 
 
@@ -35,7 +38,7 @@ az ad sp create-for-rbac -n $spn --sdk-auth
 ```
 
 > [!IMPORTANT]
-> 1. Copy the entire JSON output from the `az ad sp` command execution result into the value of GitHub Secret `AZURE_CREDENTIALS`. See [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Cwindows#add-the-service-principal-as-a-github-secret) for reference.
+> 1. Copy the entire JSON output from the `az ad sp` command execution result into the **Secret** filed of `AZURE_CREDENTIALS`. See [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Cwindows#add-the-service-principal-as-a-github-secret) for reference.
 >
 > 2. Save the `clientId` from the JSON output into an environment variable (without double quotes) as it will be needed in the next step:
 >```
@@ -56,18 +59,18 @@ See [az keyvault set-policy](https://learn.microsoft.com/en-us/cli/azure/keyvaul
 
 - Create a `.github/workflows` directory in your repository on GitHub if this directory does not already exist.
 
-- In the `.github/workflows directory`, create a file named `<your_workflow>.yml`. For more information, see [Creating new files](https://docs.github.com/en/repositories/working-with-files/managing-files/creating-new-files).
+- In the `.github/workflows` directory, create a file named `<your_workflow>.yml`. 
 
 - You can copy the [signing template workflow](https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/blob/template/sign-template.yml) from the collapsed section below into your own `<your_workflow>.yml` file.
 
-- Update the environmental variables based on your environment by following the comments in the template. Save it and commit it to the repository.
+- Update the environmental variables based on your environment by following the comments in the template. Save and commit it to the repository.
 
 <details>
 
 <summary>See the signing workflow template (Click here).</summary>
 
 ```yaml
-# build and push an OCI artifact to ACR, setup notation and sign the artifact
+# Build and push an image to ACR, setup notation and sign the image
 name: notation-github-actions-sign-template
 
 on:
@@ -92,7 +95,7 @@ jobs:
         uses: actions/checkout@v3
       - name: prepare
         id: prepare
-        # Use `v1` as an example tag, user can pick their own
+      # Use `v1` as an example tag, user can pick their own
         run: |
           echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}:v1" >> "$GITHUB_ENV"
       # Log in to your ACR
