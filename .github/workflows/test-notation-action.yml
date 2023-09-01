@@ -45,8 +45,12 @@ jobs:
       - name: Azure login
         uses: Azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          allow-no-subscriptions: true
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Set up AKV policy
+        run: |
+          az keyvault set-policy --name ${{ env.AKV_NAME }} --spn ${{ secrets.AZURE_CLIENT_ID }} --certificate-permissions get --key-permissions sign --secret-permissions get
       - name: setup notation
         uses: notaryproject/notation-action/setup@main
       - name: sign released artifact using key pair from AKV
