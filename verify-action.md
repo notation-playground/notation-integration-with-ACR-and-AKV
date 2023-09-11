@@ -4,7 +4,8 @@ This document walks you through how to create a GitHub Actions workflow using No
 
 ## Prerequisites
 
-- You have a signed image stored in your ACR. If not, you can follow the document [Sign an image with Notation in GitHub Actions](sign-action.md) to create one.
+- You have a signed image stored in your ACR. 
+- As a verifier, you can access the signed image stored in the ACR registry. If you didn't create a GitHub repository secret for ACR in your signing process, you can follow the step [Create ACR_PASSWORD](sign-action.md#create-acr_password) to create a GitHub repository secret. For demonstration convenience, we will use the same GitHub repository secret `secrets.ACR_PASSWORD` that we used in the [signing process](sign-action.md).
 - You have a GitHub repository to store trusted certificates and trust policy for Notation verification. For demonstration convenience, we will use the same GitHub repository that we used in the signing process.
 
 ## Prepare Notation trust policy and trust store 
@@ -22,12 +23,12 @@ To verify the image signature, we need to create a Notation [trust policy](https
     "version": "1.0",
     "trustPolicies": [
         {
-            "name": "remote",
-            "registryScopes": [ "your-registry.azurecr.io/integration" ],
+            "name": "<yourPolicyName>",
+            "registryScopes": [ "<yourRegistry>.azurecr.io/<yourArtifact>" ],
             "signatureVerification": {
                 "level" : "strict" 
             },
-            "trustStores": [ "ca:integration"],
+            "trustStores": [ "ca:<yourTrustStore>"],
             "trustedIdentities": [
                 "*"
             ]
