@@ -11,11 +11,14 @@ This document walks you through how to create a GitHub Actions workflow to achie
 - You have created a registry in Azure Container Registry.
 - You have a GitHub repository to store the sample workflow file and GitHub Secrets.
 
-## Create GitHub Secrets to store credentials
+## Authenticate from Azure to GitHub
+There are two ways to connect GitHub Actions to your ACR and AKV, pick one of them based on your needs:
+1. [Use the Azure login action with a service principal secret](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#use-the-azure-login-action-with-a-service-principal-secret)
+2. [Use the Azure login action with OpenID Connect](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#use-the-azure-login-action-with-openid-connect)
+
+### Use the Azure login action with a service principal secret
 
 Enter your GitHub repository, create an encrypted secret `AZURE_CREDENTIALS` in the repository to authenticate with ACR and AKV. See [creating encrypted secrets for a repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for details.
-
-### Create `AZURE_CREDENTIALS`
 
 Follow the steps below to get the value of `AZURE_CREDENTIALS`. 
 
@@ -48,6 +51,28 @@ az keyvault set-policy --name $akv --spn $clientId --certificate-permissions get
 ```
 
 See [az keyvault set-policy](https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-set-policy) for reference.
+
+### Use the Azure login action with OpenID Connect
+
+Create an Access Policy under your AKV following [this doc](https://review.learn.microsoft.com/en-us/azure/key-vault/general/assign-access-policy?branch=pr-en-us-248675&tabs=azure-portal).
+
+> [!IMPORTANT]
+> You need to enable the following AKV permissions:
+> 1. Key permissions: Sign
+> 2. Secret permissions: Get
+> 3. Certificate permissions: Get 
+
+On success, the application will be displayed under "App registrations" in Azure portal. From there, follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#add-federated-credentials) to add a federated credential to your application.
+
+Then follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#create-github-secrets) to add GitHub Secrets. They are AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_SUBSCRIPTION_ID.
+
+Next, run the following commands to authenticate from ACR
+```
+# Assign AcrPush role to your application
+AZURE_CLIENT_ID={Application (client) ID from last step}
+acr_scope=/subscriptions/{subscription_id}/resourceGroups/{resource_group}
+az role assignment create --assignee $AZURE_CLIENT_ID --scopes $acr_scope --role acrpush
+```
 
 ## Create the GitHub Actions workflow
 
