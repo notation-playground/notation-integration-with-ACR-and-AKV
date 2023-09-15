@@ -52,7 +52,7 @@ az keyvault set-policy --name $akv --spn $clientId --certificate-permissions get
 
 See [az keyvault set-policy](https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-set-policy) for reference.
 
-### Use the Azure login action with OpenID Connect
+### Use the Azure login action with OpenID Connect (OIDC)
 
 Create an Access Policy under your AKV following [this doc](https://review.learn.microsoft.com/en-us/azure/key-vault/general/assign-access-policy?branch=pr-en-us-248675&tabs=azure-portal).
 
@@ -60,11 +60,11 @@ Create an Access Policy under your AKV following [this doc](https://review.learn
 > You need to enable the following AKV permissions:
 > 1. Key permissions: Sign
 > 2. Secret permissions: Get
-> 3. Certificate permissions: Get 
+> 3. Certificate permissions: Get
 
 On success, the application will be displayed under "App registrations" in Azure portal. From there, follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#add-federated-credentials) to add a federated credential to your application.
 
-Then follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#create-github-secrets) to add GitHub Secrets. They are AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_SUBSCRIPTION_ID.
+Then follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#create-github-secrets) to add GitHub Secrets. They are `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`.
 
 Next, run the following commands to authenticate from ACR
 ```
@@ -116,11 +116,20 @@ jobs:
         # Use `v1` as an example tag, user can pick their own
         run: |
           echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}:v1" >> "$GITHUB_ENV"
-      # Log in to Azure with your service principal
+      
+      # Log in to Azure with your service principal secret
       - name: Azure login
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # If you are using OIDC and federated credential, make sure to replace the above step with below:
+      # - name: Azure login
+      #   uses: Azure/login@v1
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       # Log in to your ACR registry
       - name: ACR login
         run: |
@@ -147,15 +156,15 @@ jobs:
         uses: notaryproject/notation-action/sign@main
         with:
           plugin_name: azure-kv
-          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0/notation-azure-kv_1.0.0_linux_amd64.tar.gz
-          plugin_checksum: 82d4fee34dfe5e9303e4340d8d7f651da0a89fa8ae03195558f83bb6fa8dd263
+          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.1/notation-azure-kv_1.0.1_linux_amd64.tar.gz
+          plugin_checksum: f8a75d9234db90069d9eb5660e5374820edf36d710bd063f4ef81e7063d3810b
           key_id: ${{ env.KEY_ID }}
           target_artifact_reference: ${{ env.target_artifact_reference }}
           signature_format: cose
           plugin_config: |-
             ca_certs=.github/cert-bundle/cert-bundle.crt
             self_signed=false
-          # if using self-signed certificate from AKV, then the plugin_config should be:
+          # If you are using self-signed certificate from AKV, then the `plugin_config` should be:
           # plugin_config: |-
           #   self_signed=true
           allow_referrers_api: 'true'
