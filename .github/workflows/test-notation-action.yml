@@ -28,12 +28,25 @@ jobs:
         run: |
           BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${BRANCH_NAME}" >> "$GITHUB_ENV"
-      - name: docker login
-        uses: azure/docker-login@v1
+      # - name: Azure login
+      #   uses: Azure/login@v1
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Azure login
+        uses: Azure/login@v1
         with:
-          login-server: ${{ env.ACR_TO_RELEASE }}
-          username: ${{ env.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS2 }}
+      - name: ACR login
+        run: |
+          az acr login --name ${{ env.ACR_TO_RELEASE }}
+      # - name: docker login
+      #   uses: azure/docker-login@v1
+      #   with:
+      #     login-server: ${{ env.ACR_TO_RELEASE }}
+      #     username: ${{ env.ACR_USERNAME }}
+      #     password: ${{ secrets.ACR_PASSWORD }}
       - name: Build and push
         id: push
         uses: docker/build-push-action@v4
@@ -43,15 +56,6 @@ jobs:
       - name: Retrieve digest
         run: |
           echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
-      - name: Azure login
-        uses: Azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # - name: Set up AKV policy
-      #   run: |
-      #     az keyvault set-policy --name ${{ env.AKV_NAME }} --spn ${{ secrets.AZURE_CLIENT_ID }} --certificate-permissions get --key-permissions sign --secret-permissions get
       - name: setup notation
         uses: notaryproject/notation-action/setup@main
       - name: sign released artifact using key pair from AKV
