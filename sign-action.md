@@ -13,14 +13,7 @@ This document walks you through how to create a GitHub Actions workflow to achie
 
 ## Create GitHub Secrets to store credentials
 
-Enter your GitHub repository, create two encrypted secrets `ACR_PASSWORD` and `AZURE_CREDENTIALS` in the repository to authenticate with ACR and AKV. See [creating encrypted secrets for a repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for details.
-
-- `ACR_PASSWORD`: the password of your ACR registry where your image will be stored.
-- `AZURE_CREDENTIALS`: the credential to access your AKV where your signing key pair is stored.
-
-### Create `ACR_PASSWORD`
-
-Create a new GitHub repository secret. Type `ACR_PASSWORD` in the `Name` field. Enter your ACR password into the `Secret` field. 
+Enter your GitHub repository, create an encrypted secret `AZURE_CREDENTIALS` in the repository to authenticate with ACR and AKV. See [creating encrypted secrets for a repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for details.
 
 ### Create `AZURE_CREDENTIALS`
 
@@ -29,12 +22,13 @@ Follow the steps below to get the value of `AZURE_CREDENTIALS`.
 - Execute the following commands to create a new service principal on Azure. 
 
 ```
-# login using your own account
+# Log in to Azure CLI
 az login
 
-# Create a service principal
-spn=notationtest
-az ad sp create-for-rbac -n $spn --sdk-auth
+# Create a new service principal with AcrPush role
+spn={service_principal_name}
+acr_scope=/subscriptions/{subscription_id}/resourceGroups/{resource_group}
+az ad sp create-for-rbac -n $spn --scopes $acr_scope --role acrpush --sdk-auth
 ```
 
 > [!IMPORTANT]
@@ -42,26 +36,26 @@ az ad sp create-for-rbac -n $spn --sdk-auth
 >
 > 2. Save the `clientId` from the JSON output into an environment variable (without double quotes) as it will be needed in the next step:
 >```
->  clientId=<clientId_from_JSON_output_of_last_step>
+>  clientId={clientId_from_JSON_output_of_last_step}
 >```
 
 - Grant the AKV access permissions to the service principal that we created in the previous step.
 
 ```
 # set policy for your AKV
-akv=<your_akv_name>
+akv={your_akv_name}
 az keyvault set-policy --name $akv --spn $clientId --certificate-permissions get --key-permissions sign --secret-permissions get
 ```
 
 See [az keyvault set-policy](https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-set-policy) for reference.
 
-### Create the GitHub Actions workflow
+## Create the GitHub Actions workflow
 
 - Create a `.github/workflows` directory in your repository on GitHub if this directory does not already exist.
 
-- In the `.github/workflows` directory, create a file named `<your_workflow>.yml`. 
+- In the `.github/workflows` directory, create a file named `{your_workflow}.yml`. 
 
-- You can copy the [signing template workflow](https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/blob/template/sign-template.yml) from the collapsed section below into your own `<your_workflow>.yml` file.
+- You can copy the [signing template workflow](https://github.com/notation-playground/notation-integration-with-ACR-and-AKV/blob/template/sign-template.yml) from the collapsed section below into your own `{your_workflow}.yml` file.
 
 - Update the environmental variables based on your environment by following the comments in the template. Save and commit it to the repository.
 
@@ -77,12 +71,11 @@ on:
   push:
 
 env:
-  ACR_REGISTRY_NAME: <registry_name_of_your_ACR>        # example: myRegistry.azurecr.io
-  ACR_REPO_NAME: <repository_name_of_your_ACR>          # example: myRepo
-  ACR_USERNAME: <user_name_of_your_ACR>                 # example: myRegistry
-  AKV_NAME: <your_Azure_Key_Vault_Name>                 # example: myAzureKeyVault
-  KEY_ID: <key_id_of_your_private_key_to_sign_in_AKV>   # example: https://mynotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
-  NOTATION_EXPERIMENTAL: 1                              # [Optional] when set, use Referrers API in the workflow
+  ACR_REGISTRY_NAME: <registry_name_of_your_ACR>          # example: myRegistry.azurecr.io
+  ACR_REPO_NAME: <repository_name_of_your_ACR>            # example: myRepo
+  AKV_NAME: <your_Azure_Key_Vault_Name>                   # example: myAzureKeyVault
+  KEY_ID: <key_id_of_your_private_key_to_sign_from_AKV>   # example: https://mynotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
+  NOTATION_EXPERIMENTAL: 1                                # [Optional] when set, use Referrers API in the workflow (Recommended)
 
 jobs:
   notation-sign:
@@ -95,17 +88,19 @@ jobs:
         uses: actions/checkout@v3
       - name: prepare
         id: prepare
-      # Use `v1` as an example tag, user can pick their own
+        # Use `v1` as an example tag, user can pick their own
         run: |
           echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}:v1" >> "$GITHUB_ENV"
-      # Log in to your ACR
-      - name: docker login
-        uses: azure/docker-login@v1
+      # Log in to Azure with your service principal
+      - name: Azure login
+        uses: Azure/login@v1
         with:
-          login-server: ${{ env.ACR_REGISTRY_NAME }}
-          username: ${{ env.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-      # Build and push an image to ACR
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Log in to your ACR registry
+      - name: ACR login
+        run: |
+            az acr login --name ${{ env.ACR_REGISTRY_NAME }}
+      # Build and push an image to the registry
       # Use `Dockerfile` as an example to build an image
       - name: Build and push
         id: push
@@ -117,12 +112,6 @@ jobs:
       - name: Retrieve digest
         run: |
           echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
-      # Log in to Azure in order to access AKV
-      - name: Azure login
-        uses: Azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          allow-no-subscriptions: true
       
       # Install Notation CLI with the default version "1.0.0"
       - name: setup notation
