@@ -39,7 +39,7 @@ az ad sp create-for-rbac -n $spn --scopes $acr_scope --role acrpush --sdk-auth
 >
 > 2. Save the `clientId` from the JSON output into an environment variable (without double quotes) as it will be needed in the next step:
 >```
->  clientId={clientId_from_JSON_output_of_last_step}
+>clientId={clientId_from_JSON_output_of_last_step}
 >```
 
 - Grant the AKV access permissions to the service principal that we created in the previous step.
@@ -54,25 +54,38 @@ See [az keyvault set-policy](https://learn.microsoft.com/en-us/cli/azure/keyvaul
 
 ### Use the Azure login action with OpenID Connect (OIDC)
 
-Create an Access Policy under your AKV following [this doc](https://review.learn.microsoft.com/en-us/azure/key-vault/general/assign-access-policy?branch=pr-en-us-248675&tabs=azure-portal).
+Execute the following commands to register a new Azure Active Directory (AAD) application.
 
-> [!IMPORTANT]
-> You need to enable the following AKV permissions:
-> 1. Key permissions: Sign
-> 2. Secret permissions: Get
-> 3. Certificate permissions: Get
-
-On success, the application will be displayed under "App registrations" in Azure portal. From there, follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#add-federated-credentials) to add a federated credential to your application.
-
-Then follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#create-github-secrets) to add GitHub Secrets. They are `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`.
-
-Next, run the following commands to authenticate from ACR
 ```
+# Log in to Azure CLI
+az login
+
+# Register a new AAD application
+az ad app create --display-name {myApp}
+```
+
+This command will output JSON with an `appId` that is your `clientId`. Save the `appId` as `clientId` since it will be used later.
+```
+clientId={appId_from_JSON_output_of_last_step}
+```
+
+Create a new Service Principal and configure it to interact with ACR and AKV.
+```
+# Create a new Service Principal
+az ad sp create --id $clientId
+
 # Assign AcrPush role to your application
-AZURE_CLIENT_ID={Application (client) ID from last step}
 acr_scope=/subscriptions/{subscription_id}/resourceGroups/{resource_group}
-az role assignment create --assignee $AZURE_CLIENT_ID --scopes $acr_scope --role acrpush
+az role assignment create --assignee $clientId --scopes $acr_scope --role acrpush
+
+# set policy for your AKV
+akv={your_akv_name}
+az keyvault set-policy --name $akv --spn $clientId --certificate-permissions get --key-permissions sign --secret-permissions get
 ```
+
+Your AAD application will be displayed under `App registrations` in Azure portal. From there, follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#add-federated-credentials) to add a federated credential to your application.
+
+Finally, follow [this doc](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#create-github-secrets) to add three GitHub Secrets. They are `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`.
 
 ## Create the GitHub Actions workflow
 
