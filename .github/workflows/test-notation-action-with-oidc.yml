@@ -1,14 +1,14 @@
-name: test-notation-action
+# workflow using OIDC and federated credentials
+name: test-notation-action-with-oidc
 
 on:
   push:
     branches:
-      - main
+        - main
 
 env:
   ACR_TO_RELEASE: testnotation.azurecr.io
   ACR_REPO_TO_RELEASE: integration
-  ACR_USERNAME: testnotation
   AKV_NAME: testnotationAKV
   KEY_ID: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
   NOTATION_EXPERIMENTAL: 1
@@ -28,27 +28,17 @@ jobs:
       - name: prepare
         id: prepare
         run: |
-          BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${BRANCH_NAME}" >> "$GITHUB_ENV"
-      # - name: Azure login
-      #   uses: Azure/login@v1
-      #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          TAG=oidc
+          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${TAG}" >> "$GITHUB_ENV"
       - name: Azure login
         uses: Azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS2 }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: ACR login
         run: |
           az acr login --name ${{ env.ACR_TO_RELEASE }}
-      # - name: docker login
-      #   uses: azure/docker-login@v1
-      #   with:
-      #     login-server: ${{ env.ACR_TO_RELEASE }}
-      #     username: ${{ env.ACR_USERNAME }}
-      #     password: ${{ secrets.ACR_PASSWORD }}
       - name: Build and push
         id: push
         uses: docker/build-push-action@v4
@@ -59,13 +49,13 @@ jobs:
         run: |
           echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
       - name: setup notation
-        uses: notaryproject/notation-action/setup@main
+        uses: notaryproject/notation-action@main
       - name: sign released artifact using key pair from AKV
         uses: notaryproject/notation-action/sign@main
         with:
           plugin_name: azure-kv
-          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.0/notation-azure-kv_1.0.0_linux_amd64.tar.gz
-          plugin_checksum: 82d4fee34dfe5e9303e4340d8d7f651da0a89fa8ae03195558f83bb6fa8dd263
+          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.1/notation-azure-kv_1.0.1_linux_amd64.tar.gz
+          plugin_checksum: f8a75d9234db90069d9eb5660e5374820edf36d710bd063f4ef81e7063d3810b
           key_id: ${{ env.KEY_ID }}
           target_artifact_reference: ${{ env.target_artifact_reference }}
           signature_format: cose
