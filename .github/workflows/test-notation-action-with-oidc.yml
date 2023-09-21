@@ -4,7 +4,7 @@ name: test-notation-action-with-oidc
 on:
   push:
     branches:
-        - main
+      - main
 
 env:
   ACR_TO_RELEASE: testnotation.azurecr.io
