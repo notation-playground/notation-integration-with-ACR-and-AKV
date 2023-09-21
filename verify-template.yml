@@ -39,11 +39,11 @@ jobs:
 
       # Install Notation CLI, the default version is "1.0.0"
       - name: setup notation
-        uses: notaryproject/notation-action/setup@main
+        uses: notaryproject/notation-action/setup@v1
       
       # Verify the OCI artifact
       - name: verify OCI artifact
-        uses: notaryproject/notation-action/verify@main
+        uses: notaryproject/notation-action/verify@v1
         with:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           trust_policy: .github/trustpolicy/trustpolicy.json
