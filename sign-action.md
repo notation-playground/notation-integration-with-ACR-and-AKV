@@ -111,7 +111,6 @@ on:
 env:
   ACR_REGISTRY_NAME: <registry_name_of_your_ACR>          # example: myRegistry.azurecr.io
   ACR_REPO_NAME: <repository_name_of_your_ACR>            # example: myRepo
-  AKV_NAME: <your_Azure_Key_Vault_Name>                   # example: myAzureKeyVault
   KEY_ID: <key_id_of_your_private_key_to_sign_from_AKV>   # example: https://mynotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
   NOTATION_EXPERIMENTAL: 1                                # [Optional] when set, use Referrers API in the workflow (Recommended)
 
@@ -162,11 +161,11 @@ jobs:
       
       # Install Notation CLI with the default version "1.0.0"
       - name: setup notation
-        uses: notaryproject/notation-action/setup@main
+        uses: notaryproject/notation-action/setup@v1
       
       # Sign your OCI artifact using private key stored in AKV
       - name: sign OCI artifact using key pair from AKV
-        uses: notaryproject/notation-action/sign@main
+        uses: notaryproject/notation-action/sign@v1
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.0.1/notation-azure-kv_1.0.1_linux_amd64.tar.gz
