@@ -7,7 +7,6 @@ on:
 env:
   ACR_REGISTRY_NAME: <registry_name_of_your_ACR>          # example: myRegistry.azurecr.io
   ACR_REPO_NAME: <repository_name_of_your_ACR>            # example: myRepo
-  AKV_NAME: <your_Azure_Key_Vault_Name>                   # example: myAzureKeyVault
   KEY_ID: <key_id_of_your_private_key_to_sign_from_AKV>   # example: https://mynotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
   NOTATION_EXPERIMENTAL: 1                                # [Optional] when set, use Referrers API in the workflow (Recommended)
 
@@ -24,7 +23,8 @@ jobs:
         id: prepare
         # Use `v1` as an example tag, user can pick their own
         run: |
-          echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}:v1" >> "$GITHUB_ENV"
+          TAG=v1
+          echo "target_artifact_reference=${{ env.ACR_REGISTRY_NAME }}/${{ env.ACR_REPO_NAME }}:${TAG}" >> "$GITHUB_ENV"
       
       # Log in to Azure with your service principal secret
       - name: Azure login

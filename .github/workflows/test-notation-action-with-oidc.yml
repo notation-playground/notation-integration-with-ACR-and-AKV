@@ -9,7 +9,6 @@ on:
 env:
   ACR_TO_RELEASE: testnotation.azurecr.io
   ACR_REPO_TO_RELEASE: integration
-  AKV_NAME: testnotationAKV
   KEY_ID: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
   NOTATION_EXPERIMENTAL: 1
 
