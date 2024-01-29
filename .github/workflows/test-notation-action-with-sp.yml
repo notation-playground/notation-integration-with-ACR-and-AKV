@@ -27,7 +27,7 @@ jobs:
       - name: prepare
         id: prepare
         run: |
-          TAG=sp-1.0.1
+          TAG=sp-1.1.0
           echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${TAG}" >> "$GITHUB_ENV"
       - name: Azure login
         uses: Azure/login@v1
@@ -48,8 +48,8 @@ jobs:
       - name: setup notation
         uses: notaryproject/notation-action/setup@v1
         with:
-          url: https://github.com/notaryproject/notation/releases/download/v1.0.1/notation_1.0.1_linux_amd64.tar.gz
-          checksum: 898b6c1cab5763d2dbe979132ae1a5d09571bfd62d14cc9114b77815e0228302
+          url: https://github.com/notaryproject/notation/releases/download/v1.1.0/notation_1.1.0_linux_amd64.tar.gz
+          checksum: 0e31e156edff6cc324405cda391d7144b0b99c265a7bdfa6644f457e530fe6d4
       - name: sign released artifact using key pair from AKV
         uses: notaryproject/notation-action/sign@v1
         with:
