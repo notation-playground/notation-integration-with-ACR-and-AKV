@@ -27,7 +27,7 @@ jobs:
       - name: prepare
         id: prepare
         run: |
-          TAG=sp-1.1.0
+          TAG=sp
           echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${TAG}" >> "$GITHUB_ENV"
       - name: Azure login
         uses: Azure/login@v1
