@@ -49,10 +49,7 @@ jobs:
           echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
       - name: setup notation
         # this is equivalent to `uses: notaryproject/notation-action/setup@v1`
-        uses: notaryproject/notation-action@v1
-        with:  
-          url: https://github.com/notaryproject/notation/releases/download/v1.1.0/notation_1.1.0_linux_amd64.tar.gz
-          checksum: 0e31e156edff6cc324405cda391d7144b0b99c265a7bdfa6644f457e530fe6d4
+        uses: notaryproject/notation-action@v1.0.1
       - name: sign released artifact using key pair from AKV
         uses: notaryproject/notation-action/sign@v1
         with:
