@@ -32,7 +32,7 @@ jobs:
       - name: Azure login
         uses: Azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS2 }}
+          creds: ${{ secrets.AZURE_CREDENTIALS_SP }}
       - name: ACR login
         run: |
             az acr login --name ${{ env.ACR_TO_RELEASE }}
