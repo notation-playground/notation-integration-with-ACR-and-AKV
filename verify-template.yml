@@ -37,7 +37,7 @@ jobs:
         run: |
             az acr login --name ${{ env.ACR_REGISTRY_NAME }}
 
-      # Install Notation CLI, the default version is "1.0.0"
+      # Install Notation CLI, the default version is "1.1.0"
       - name: setup notation
         uses: notaryproject/notation-action/setup@v1
       
