@@ -3,11 +3,11 @@
     "trustPolicies": [
         {
             "name": "remote",
-            "registryScopes": [ "testnotation.azurecr.io/integration" ],
+            "registryScopes": [ "testnotation.azurecr.io/gha1", "testnotation.azurecr.io/gha2" ],
             "signatureVerification": {
                 "level" : "strict" 
             },
-            "trustStores": [ "ca:integration"],
+            "trustStores": [ "ca:gha"],
             "trustedIdentities": [
                 "*"
             ]
