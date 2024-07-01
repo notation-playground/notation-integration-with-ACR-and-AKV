@@ -8,7 +8,8 @@ on:
 
 env:
   ACR_TO_RELEASE: testnotation.azurecr.io
-  ACR_REPO_TO_RELEASE: integration
+  ACR_REPO1_TO_RELEASE: gha1
+  ACR_REPO2_TO_RELEASE: gha2
   KEY_ID: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
   NOTATION_EXPERIMENTAL: 1
 
@@ -28,7 +29,8 @@ jobs:
         id: prepare
         run: |
           TAG=oidc
-          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}:${TAG}" >> "$GITHUB_ENV"
+          echo "target_artifact_reference1=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO1_TO_RELEASE }}:${TAG}" >> "$GITHUB_ENV"
+          echo "target_artifact_reference2=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO2_TO_RELEASE }}:${TAG}" >> "$GITHUB_ENV"
       - name: Azure login
         uses: Azure/login@v1
         with:
@@ -43,30 +45,37 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ${{ env.target_artifact_reference }}
+          tags: |
+            ${{ env.target_artifact_reference1 }}
+            ${{ env.target_artifact_reference2 }}
       - name: Retrieve digest
         run: |
-          echo "target_artifact_reference=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
+          echo "target_artifact_reference1=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO1_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
+          echo "target_artifact_reference2=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO2_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
       - name: setup notation
-        # this is equivalent to `uses: notaryproject/notation-action/setup@v1`
-        uses: notaryproject/notation-action@v1
-      - name: sign released artifact using key pair from AKV
-        uses: notaryproject/notation-action/sign@v1
+        # this is equivalent to `uses: Two-Hearts/notation-action/setup@v1`
+        uses: Two-Hearts/notation-action@feat
+      - name: sign released artifacts using key pair from AKV
+        uses: Two-Hearts/notation-action/sign@feat
         with:
           plugin_name: azure-kv
-          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.1.0/notation-azure-kv_1.1.0_linux_amd64.tar.gz
-          plugin_checksum: 2fc959bf850275246b044203609202329d015005574fabbf3e6393345e49b884
+          plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.2.0/notation-azure-kv_1.2.0_linux_amd64.tar.gz
+          plugin_checksum: 06bb5198af31ce11b08c4557ae4c2cbfb09878dfa6b637b7407ebc2d57b87b34
           key_id: ${{ env.KEY_ID }}
-          target_artifact_reference: ${{ env.target_artifact_reference }}
+          target_artifact_reference: |-
+            ${{ env.target_artifact_reference1 }}
+            ${{ env.target_artifact_reference2 }}
           signature_format: cose
           plugin_config: |-
             ca_certs=.github/cert-bundle/cert-bundle.crt
             self_signed=false
           allow_referrers_api: 'true'
-      - name: verify released artifact
-        uses: notaryproject/notation-action/verify@v1
+      - name: verify released artifacts
+        uses: Two-Hearts/notation-action/verify@feat
         with:
-          target_artifact_reference: ${{ env.target_artifact_reference }}
+          target_artifact_reference: |-
+            ${{ env.target_artifact_reference1 }}
+            ${{ env.target_artifact_reference2 }}
           trust_policy: .github/trustpolicy/trustpolicy.json
           trust_store: .github/truststore
           allow_referrers_api: 'true'
