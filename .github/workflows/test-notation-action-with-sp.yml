@@ -68,7 +68,7 @@ jobs:
             ca_certs=.github/cert-bundle/cert-bundle.crt
             self_signed=false
           allow_referrers_api: 'true'
-      - name: verify released artifact 1
+      - name: verify released artifacts
         uses: Two-Hearts/notation-action/verify@feat
         with:
           target_artifact_reference: |-
