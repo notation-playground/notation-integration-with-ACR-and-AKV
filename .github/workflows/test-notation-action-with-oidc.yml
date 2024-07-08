@@ -10,7 +10,7 @@ env:
   ACR_TO_RELEASE: testnotation.azurecr.io
   ACR_REPO1_TO_RELEASE: gha1
   ACR_REPO2_TO_RELEASE: gha2
-  KEY_ID: https://testnotationakv.vault.azure.net/keys/notationLeafCert/c585b8ad8fc542b28e41e555d9b3a1fd
+  KEY_ID: https://testnotationakv.vault.azure.net/keys/notation/570eae8ed8b44f1b8d6f187923b68a76
   NOTATION_EXPERIMENTAL: 1
 
 jobs:
