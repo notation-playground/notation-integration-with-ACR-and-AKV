@@ -67,7 +67,7 @@ jobs:
             ${{ env.target_artifact_reference2 }}
           signature_format: cose
           plugin_config: |-
-            ca_certs=.github/cert-bundle/cert-bundle.crt
+            ca_certs=.github/cert-bundle/cert-bundle.pem
             self_signed=false
           allow_referrers_api: 'true'
       - name: verify released artifacts
