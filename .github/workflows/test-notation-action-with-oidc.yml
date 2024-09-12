@@ -54,12 +54,9 @@ jobs:
           echo "target_artifact_reference2=${{ env.ACR_TO_RELEASE }}/${{ env.ACR_REPO2_TO_RELEASE }}@${{ steps.push.outputs.digest }}" >> "$GITHUB_ENV"
       - name: setup notation
         # this is equivalent to `uses: notaryproject/notation-action/setup@v1`
-        uses: notaryproject/notation-action@v1
-        with:
-          url: https://github.com/notaryproject/notation/releases/download/v1.2.0-alpha.1/notation_1.2.0-alpha.1_linux_amd64.tar.gz
-          checksum: 0fe1d67b2015789dbec59aa1696cb707cda72628ec43dc312f925ea989ef2e7b
+        uses: notaryproject/notation-action@main
       - name: sign released artifacts using key pair from AKV
-        uses: notaryproject/notation-action/sign@v1
+        uses: notaryproject/notation-action/sign@main
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.2.0/notation-azure-kv_1.2.0_linux_amd64.tar.gz
@@ -74,7 +71,7 @@ jobs:
             self_signed=false
           allow_referrers_api: 'true'
       - name: verify released artifacts
-        uses: notaryproject/notation-action/verify@v1
+        uses: notaryproject/notation-action/verify@main
         with:
           target_artifact_reference: |-
             ${{ env.target_artifact_reference1 }}
