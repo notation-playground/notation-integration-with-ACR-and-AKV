@@ -174,7 +174,7 @@ jobs:
           target_artifact_reference: ${{ env.target_artifact_reference }}
           signature_format: cose
           plugin_config: |-
-            ca_certs=.github/cert-bundle/cert-bundle.crt
+            ca_certs=.github/sign/cert-bundle/cert-bundle.crt
             self_signed=false
           # If you are using self-signed certificate from AKV, then the `plugin_config` should be:
           # plugin_config: |-
