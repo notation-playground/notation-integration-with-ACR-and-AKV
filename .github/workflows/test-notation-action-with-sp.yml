@@ -4,7 +4,7 @@ name: test-notation-action-with-sp
 on:
   push:
     branches:
-      - main
+      - test
 
 env:
   ACR_TO_RELEASE: testnotation.azurecr.io
