@@ -79,3 +79,4 @@ jobs:
             ${{ env.target_artifact_reference2 }}
           trust_policy: .github/verify/trustpolicy/trustpolicy.json
           trust_store: .github/verify/truststore
+          
