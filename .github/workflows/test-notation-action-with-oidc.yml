@@ -57,7 +57,7 @@ jobs:
         uses: two-hearts/notation-action@upgrade
       - name: sign released artifacts using key pair from AKV
         #uses: notaryproject/notation-action/sign@v1
-        uses: two-hearts/notation-action@upgrade
+        uses: two-hearts/notation-action/sign@upgrade
         with:
           plugin_name: azure-kv
           plugin_url: https://github.com/Azure/notation-azure-kv/releases/download/v1.2.0/notation-azure-kv_1.2.0_linux_amd64.tar.gz
@@ -75,7 +75,7 @@ jobs:
           force_referrers_tag: 'false'
       - name: verify released artifacts
         #uses: notaryproject/notation-action/verify@v1
-        uses: two-hearts/notation-action@upgrade
+        uses: two-hearts/notation-action/verify@upgrade
         with:
           target_artifact_reference: |-
             ${{ env.target_artifact_reference1 }}
